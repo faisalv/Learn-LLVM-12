@@ -1,16 +1,18 @@
 cmake_minimum_required(VERSION 3.4.3)
+# cmake -G "Visual Studio 17 2022" -A Win32 ..\tinylang -DLLVM_CMAKE_PATH=F:/clang-trunk/build/lib/cmake/llvm
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   project(Tinylang)
-
   find_package(LLVM REQUIRED HINTS "${LLVM_CMAKE_PATH}")
   list(APPEND CMAKE_MODULE_PATH ${LLVM_DIR})
-
+  set(CMAKE_CXX_STANDARD 17 CACHE STRING "C++ standard to conform to")
+  set(CMAKE_CXX_STANDARD_REQUIRED YES)
   include(AddLLVM)
   include(HandleLLVMOptions)
 
-  include_directories("${LLVM_BINARY_DIR}/include" "${LLVM_INCLUDE_DIR}")
-  link_directories("${LLVM_LIBRARY_DIR}")
+# include_directories("${LLVM_BINARY_DIR}/include" "${LLVM_INCLUDE_DIR}")
+  include_directories("${LLVM_INCLUDE_DIRS}")
+  link_directories("${LLVM_LIBRARY_DIRS}")
 
   set(TINYLANG_BUILT_STANDALONE 1)
 endif()
