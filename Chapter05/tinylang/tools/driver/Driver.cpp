@@ -3,13 +3,15 @@
 #include "tinylang/CodeGen/CodeGenerator.h"
 #include "tinylang/Parser/Parser.h"
 #include "llvm/CodeGen/CommandFlags.h"
+#include "llvm/Pass.h"
 #include "llvm/IR/IRPrintingPasses.h"
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/Support/CommandLine.h"
+#include "llvm/Support/FileSystem.h"
 #include "llvm/Support/InitLLVM.h"
 #include "llvm/Support/Host.h"
 #include "llvm/Support/MemoryBuffer.h"
-#include "llvm/Support/TargetRegistry.h"
+#include "llvm/MC/TargetRegistry.h"
 #include "llvm/Support/TargetSelect.h"
 #include "llvm/Support/ToolOutputFile.h"
 #include "llvm/Support/WithColor.h"
@@ -139,11 +141,11 @@ int main(int Argc, const char **Argv) {
   llvm::cl::SetVersionPrinter(&printVersion);
   llvm::cl::ParseCommandLineOptions(Argc, Argv, Head);
 
-  if (codegen::getMCPU() == "help" ||
+  if (codegen::getMCPU() == "help" || (codegen::getMAttrs().size() &&
       std::any_of(codegen::getMAttrs().begin(), codegen::getMAttrs().end(),
                   [](const std::string &a) {
                     return a == "help";
-                  })) {
+                  }))) {
     auto Triple = llvm::Triple(LLVM_DEFAULT_TARGET_TRIPLE);
     std::string ErrMsg;
     if (auto target = llvm::TargetRegistry::lookupTarget(
