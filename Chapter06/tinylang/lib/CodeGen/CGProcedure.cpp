@@ -203,7 +203,7 @@ CGProcedure::createFunction(ProcedureDeclaration *Proc,
     FormalParameterDeclaration *FP =
         Proc->getFormalParams()[Idx];
     if (FP->isVar()) {
-      llvm::AttrBuilder Attr;
+      llvm::AttrBuilder Attr(CGM.getLLVMCtx());
       llvm::TypeSize Sz =
           CGM.getModule()->getDataLayout().getTypeStoreSize(
               CGM.convertType(FP->getType()));
@@ -315,7 +315,7 @@ llvm::Value *CGProcedure::emitExpr(Expr *E) {
           } else
             break;
         }
-        Val = Builder.CreateInBoundsGEP(Val, IdxList);
+        Val = Builder.CreateInBoundsGEP(Val->getType()->getPointerElementType(), Val, IdxList);
         Val = Builder.CreateLoad(
             Val->getType()->getPointerElementType(), Val);
       } else if (auto *FieldSel =
@@ -331,7 +331,7 @@ llvm::Value *CGProcedure::emitExpr(Expr *E) {
           } else
             break;
         }
-        Val = Builder.CreateInBoundsGEP(Val, IdxList);
+        Val = Builder.CreateInBoundsGEP(Val->getType()->getPointerElementType(), Val, IdxList);
         Val = Builder.CreateLoad(
             Val->getType()->getPointerElementType(), Val);
       } else if (auto *DerefSel =
@@ -390,7 +390,7 @@ void CGProcedure::emitStmt(AssignmentStatement *Stmt) {
     }
     if (!IdxList.empty()) {
       if (Base->getType()->isPointerTy()) {
-        Base = Builder.CreateInBoundsGEP(Base, IdxList);
+        Base = Builder.CreateInBoundsGEP(Base->getType()->getPointerElementType(), Base, IdxList);
         Builder.CreateStore(Val, Base);
       }
       else {

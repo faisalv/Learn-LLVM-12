@@ -9,10 +9,13 @@
 #include "llvm/Support/InitLLVM.h"
 #include "llvm/Support/Host.h"
 #include "llvm/Support/MemoryBuffer.h"
-#include "llvm/Support/TargetRegistry.h"
 #include "llvm/Support/TargetSelect.h"
 #include "llvm/Support/ToolOutputFile.h"
 #include "llvm/Support/WithColor.h"
+
+#include "llvm/Pass.h"
+#include "llvm/Support/FileSystem.h"
+#include "llvm/MC/TargetRegistry.h"
 
 using namespace llvm;
 using namespace tinylang;
